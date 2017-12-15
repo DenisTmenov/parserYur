@@ -23,7 +23,7 @@
 
 <script>
 	window.menu = '${title}';
-	
+
 	window.contextRoot = '${contextRoot}';
 </script>
 
@@ -69,13 +69,23 @@
 			<c:if test="${userClickServices == true}">
 				<%@include file="services.jsp"%>
 			</c:if>
-			
+
 			<!-- Parser page -->
 			<c:if test="${userClickParser == true}">
 				<%@include file="parser.jsp"%>
 			</c:if>
-			
-			
+
+			<!-- Parser HTML page -->
+			<c:if test="${userClickParserHtml == true}">
+				<%@include file="parser_html.jsp"%>
+			</c:if>
+
+			<!-- Parser File page -->
+			<c:if test="${userClickParserFile == true}">
+				<%@include file="parser_file.jsp"%>
+			</c:if>
+
+
 		</div>
 		<!-- Page Content end -->
 
@@ -85,20 +95,20 @@
 		<!-- Bootstrap core JavaScript -->
 		<script src="${js}/popper.js"></script>
 		<script src="${js}/bootstrap.js"></script>
-		
+
 		<!-- Bootstrap dataTables JavaScript -->
 		<script src="${js}/dataTables.bootstrap4.js"></script>
-		
+
 		<!-- jQuery -->
 		<script src="${jquery}/jquery.js"></script>
-		
+
 		<!-- Custom scripts -->
 		<script src="${js}/userApp.js"></script>
-		
+
 		<!-- DataTable Plugin -->
 		<script src="${jquery}/jquery.dataTables.js"></script>
-		
-		
+
+
 	</div>
 </body>
 

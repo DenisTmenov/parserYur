@@ -12,17 +12,15 @@ $(function() {
 	case 'Services':
 		$('#services').addClass('active');
 		break;
-	case 'All Products':
-		$('#allProducts').addClass('active');
+	case 'Parser':
+		$('#parser').addClass('active');
 		break;
 	case 'Manage Products':
 		$('#manageProducts').addClass('active');
 		break;
 
 	default:
-
-		$('#allProducts').addClass('active');
-		$('#a_' + menu).addClass('active');
+		$('#parser').addClass('active');
 		break;
 	}
 

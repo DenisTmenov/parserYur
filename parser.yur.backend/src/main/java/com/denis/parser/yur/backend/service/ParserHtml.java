@@ -28,13 +28,13 @@ import com.denis.parser.yur.backend.dto.DoorImage;
 import com.denis.parser.yur.backend.utils.StringUtils;
 
 @Service
-public class HtmlParser {
+public class ParserHtml implements Parser {
 
 	private final String ERROR = "(HtmlParser) Problem ";
 
 	private String start_URL = "";
 
-	private Map<Integer, Document> urlDocMap = new HashMap<>();
+	private List<String> productURLs;
 
 	@Autowired
 	private DoorDAO doorDAO;
@@ -42,15 +42,16 @@ public class HtmlParser {
 	@Autowired
 	private DoorImageDAO doorImageDAO;
 
-	public String getStart_URL() {
-		return start_URL;
-	}
-
 	public void setStart_URL(String start_URL) {
 		this.start_URL = start_URL;
 	}
 
-	public void start() throws IOException {
+	public List<String> getProductURLs() {
+		return productURLs;
+	}
+
+	@Override
+	public void start() {
 
 		saveDoorOnDB(getInfoFromPages());
 	}
@@ -76,16 +77,21 @@ public class HtmlParser {
 		}
 	}
 
-	private List<Door> getInfoFromPages() throws IOException {
+	private List<Door> getInfoFromPages() {
 		Document doc = null;
 		List<Door> result = new ArrayList<>();
 
-		List<String> productURLs = getProductURLs(doc);
+		productURLs = getProductURLs(doc);
 		if (productURLs.size() > 0) {
 
 			for (String productURL : productURLs) {
 
-				doc = Jsoup.connect(productURL).get();
+				try {
+					doc = Jsoup.connect(productURL).get();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				Door door = getProductInfoFromPage(doc, productURL);
 
@@ -99,8 +105,8 @@ public class HtmlParser {
 
 	private List<String> getProductURLs(Document doc) {
 		List<String> result = new ArrayList<>();
-
-		int countPages = getCountPages(doc);
+		Map<Integer, Document> urlDocMap = new HashMap<>();
+		int countPages = getCountPages(doc, urlDocMap);
 
 		for (int i = 1; i <= countPages; i++) {
 			if (urlDocMap.containsKey(i)) {
@@ -134,7 +140,7 @@ public class HtmlParser {
 		return result;
 	}
 
-	private int getCountPages(Document doc) {
+	private int getCountPages(Document doc, Map<Integer, Document> urlDocMap) {
 		int lastNumber = 0;
 		boolean detector = true;
 

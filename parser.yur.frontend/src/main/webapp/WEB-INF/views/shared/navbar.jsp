@@ -9,7 +9,7 @@
             <li id="home" class="nav-item">
               <a class="nav-link" href="${contextRoot}/home">Home</a>
             </li>
-            <li id="contacts" class="nav-item">
+            <li id="parser" class="nav-item">
               <a class="nav-link" href="${contextRoot}/parser">Parser</a>
             </li>
             <li id="about" class="nav-item">
