@@ -165,6 +165,8 @@ public class ParserFile implements Parser {
 					string = ocCategoryDescriptionMap.get(key).get(2).get("name");
 				}
 
+				// problem double gategory name
+
 				categoryNameNum.put(string, key);
 
 			}
