@@ -7,11 +7,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,13 +16,12 @@ import javax.sound.midi.Instrument;
 import org.springframework.stereotype.Service;
 
 import com.denis.parser.yur.backend.dto.Door;
-import com.denis.parser.yur.backend.utils.StringUtils;
 
 @Service
 public class ParserFile implements Parser {
 
 	private String pathToOriginalFile;
-	private List<String> allOriginalLines;
+
 	private List<String> modifyLines = new ArrayList<>();
 
 	private List<Door> productList;
@@ -46,252 +41,13 @@ public class ParserFile implements Parser {
 	@Override
 	public void start() {
 
-		readFromeFile();
-
-		getAllProductsFromeOriginalFile();
+		BackupInformation backupInformation = new BackupInformation(pathToOriginalFile);
+		backupInformation.getAllProductsFromeOriginalFile(); ///// !!!!!!!
 
 		// preparationRequests();
 
 		// saveToFile();
 
-	}
-
-	private void getAllProductsFromeOriginalFile() {
-		Map<String, Door> allDoors = new HashMap<>();
-
-		Map<Integer, Map<String, String>> ocCategoryMap = new HashMap<>();
-		Map<Integer, Map<Integer, Map<String, String>>> ocCategoryDescriptionMap = new HashMap<>();
-		Map<String, Integer> categoryNameNum = new HashMap<>();
-		Map<Integer, Map<String, String>> ocCategoryToStoreMap = new HashMap<>();
-		Map<String, Map<String, String>> ocManufacturerMap = new HashMap<>();
-		Map<Integer, Map<String, String>> ocManufacturerToStoreMap = new HashMap<>();
-		Map<Integer, Map<String, String>> ocProductMap = new HashMap<>();
-		Map<Integer, Map<Integer, Map<String, String>>> ocProductAttributeMap = new HashMap<>();
-		Map<Integer, Map<Integer, Map<String, String>>> ocProductDescriptionMap = new HashMap<>();
-		Map<Integer, Map<String, String>> ocProductImageMap = new HashMap<>();
-		Map<Integer, Map<String, String>> ocProductRewardMap = new HashMap<>();
-		Map<Integer, List<Integer>> ocProductToCategoryMap = new HashMap<>();
-		Map<Integer, Integer> ocProductToStoreMap = new HashMap<>();
-		Map<Integer, Map<String, String>> ocUrlAliasMap = new HashMap<>();
-
-		for (String originalLine : allOriginalLines) {
-
-			if (originalLine.contains("INSERT INTO `oc_category`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_category`", ocCategoryMap,
-						"category_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_category_description`")) {
-				setInfoToMapIntegerMapIntegerMapStringString(originalLine, "INSERT INTO `oc_category_description`",
-						ocCategoryDescriptionMap, "category_id", "language_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_category_to_store`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_category_to_store`",
-						ocCategoryToStoreMap, "category_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_manufacturer`")) {
-				setInfoToMapStringMapStringString(originalLine, "INSERT INTO `oc_manufacturer`", ocManufacturerMap,
-						"name");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_manufacturer_to_store`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_manufacturer_to_store`",
-						ocManufacturerToStoreMap, "manufacturer_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product`", ocProductMap,
-						"product_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product_attribute`")) {
-				setInfoToMapIntegerMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product_attribute`",
-						ocProductAttributeMap, "product_id", "language_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product_description`")) {
-				setInfoToMapIntegerMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product_description`",
-						ocProductDescriptionMap, "product_id", "language_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product_image`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product_image`", ocProductImageMap,
-						"product_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product_reward`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product_reward`", ocProductRewardMap,
-						"product_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product_to_category`")) {
-				setInfoToMapIntegerListInteger(originalLine, "INSERT INTO `oc_product_to_category`",
-						ocProductToCategoryMap, "product_id", "category_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_product_to_store`")) {
-				setInfoToMapIntegerInteger(originalLine, "INSERT INTO `oc_product_to_store`", ocProductToStoreMap,
-						"product_id", "store_id");
-				continue;
-			}
-
-			if (originalLine.contains("INSERT INTO `oc_url_alias`")) {
-				setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_url_alias`", ocUrlAliasMap,
-						"url_alias_id");
-				continue;
-			}
-
-		}
-
-		if (!ocCategoryMap.isEmpty() && !ocCategoryDescriptionMap.isEmpty()) {
-			for (Entry<Integer, Map<Integer, Map<String, String>>> entry : ocCategoryDescriptionMap.entrySet()) {
-				Integer key = entry.getKey();
-
-				String string = ocCategoryDescriptionMap.get(key).get(1).get("name");
-				if (string.isEmpty()) {
-					string = ocCategoryDescriptionMap.get(key).get(2).get("name");
-				}
-
-				// problem double gategory name
-
-				categoryNameNum.put(string, key);
-
-			}
-
-		}
-
-		System.out.println("end");
-	}
-
-	private boolean setInfoToMapIntegerMapStringString(String originalLine, String search,
-			Map<Integer, Map<String, String>> result, String nameKeyMain) {
-
-		Map<String, String> info = getInfoFromLine(originalLine, search);
-		if (info != null) {
-			if (info.containsKey(nameKeyMain)) {
-				result.put(Integer.valueOf(info.get(nameKeyMain)), info);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean setInfoToMapIntegerMapIntegerMapStringString(String originalLine, String search,
-			Map<Integer, Map<Integer, Map<String, String>>> result, String nameKeyMain, String nameKeySecondary) {
-
-		Map<String, String> info = getInfoFromLine(originalLine, search);
-
-		if (info != null) {
-			if (info.containsKey(nameKeySecondary) && info.containsKey(nameKeyMain)) {
-				Integer categoryId = Integer.valueOf(info.get(nameKeyMain));
-
-				if (!result.containsKey(categoryId)) {
-					result.put(categoryId, new HashMap<>());
-				}
-
-				if (StringUtils.isNumeric(info.get(nameKeySecondary))) {
-					result.get(categoryId).put(Integer.valueOf(info.get(nameKeySecondary)), info);
-
-					return true;
-				}
-
-			}
-		}
-		return false;
-	}
-
-	private boolean setInfoToMapStringMapStringString(String originalLine, String search,
-			Map<String, Map<String, String>> result, String nameKeyMain) {
-		Map<String, String> info = getInfoFromLine(originalLine, search);
-		if (info != null) {
-			if (info.containsKey(nameKeyMain)) {
-				result.put(info.get(nameKeyMain), info);
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean setInfoToMapIntegerListInteger(String originalLine, String search,
-			Map<Integer, List<Integer>> result, String nameKeyMain, String nameKeySecondary) {
-		Map<String, String> info = getInfoFromLine(originalLine, search);
-		if (info != null) {
-			if (StringUtils.isNumeric(info.get(nameKeyMain)) && StringUtils.isNumeric(info.get(nameKeySecondary))) {
-				Integer keyMain = Integer.valueOf(info.get(nameKeyMain));
-				Integer keySecondary = Integer.valueOf(info.get(nameKeySecondary));
-
-				if (result.containsKey(keyMain)) {
-					result.get(keyMain).add(keySecondary);
-				} else {
-					result.put(keyMain, new ArrayList<Integer>());
-					result.get(keyMain).add(keySecondary);
-				}
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean setInfoToMapIntegerInteger(String originalLine, String search, Map<Integer, Integer> result,
-			String nameKeyMain, String nameKeySecondary) {
-
-		Map<String, String> info = getInfoFromLine(originalLine, search);
-		if (info != null) {
-			if (StringUtils.isNumeric(info.get(nameKeyMain)) && StringUtils.isNumeric(info.get(nameKeySecondary))) {
-				Integer keyMain = Integer.valueOf(info.get(nameKeyMain));
-				Integer keySecondary = Integer.valueOf(info.get(nameKeySecondary));
-
-				result.put(keyMain, keySecondary);
-
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private Map<String, String> getInfoFromLine(String originalLine, String search) {
-		Map<String, String> result = new HashMap<>();
-
-		String[] splitVALUES = originalLine.split("\\) VALUES \\(");
-		if (splitVALUES.length >= 2) {
-			splitVALUES[0] = splitVALUES[0].replace(search + " (", "");
-			splitVALUES[1] = splitVALUES[1].replace(");", "");
-
-			String[] splitLEFT = splitVALUES[0].split("`, `");
-			String[] splitRIGHT = splitVALUES[1].split("', '");
-
-			if (splitLEFT.length == splitRIGHT.length) {
-				for (int i = 0; i < splitLEFT.length; i++) {
-					result.put(splitLEFT[i].replaceAll("`", ""), splitRIGHT[i].replaceAll("'", ""));
-				}
-				return result;
-			}
-		}
-
-		return null;
-	}
-
-	private void readFromeFile() {
-		try {
-			allOriginalLines = Files.readAllLines(Paths.get(pathToOriginalFile));
-		} catch (IOException e) {
-			new ServiceException("ORIGINAL file not read!", e);
-		}
 	}
 
 	private void preparationRequests() {
@@ -300,12 +56,12 @@ public class ParserFile implements Parser {
 		SimpleDateFormat hours = new SimpleDateFormat("HH:mm:ss");
 		SimpleDateFormat date = new SimpleDateFormat("YYYY-MM-dd");
 
-		Map<String, Integer> mapNumbers = getNumbers();
+		// Map<String, Integer> mapNumbers = getNumbers();
 
-		int productId = mapNumbers.get("lastProductId") + 1;
-		int imageId = mapNumbers.get("lastImageId") + 1;
-		int productRewardId = mapNumbers.get("lastProductRewardId") + 1;
-		int urlAliasId = mapNumbers.get("lastUrlAliasId") + 1;
+		// int productId = mapNumbers.get("lastProductId") + 1;
+		// int imageId = mapNumbers.get("lastImageId") + 1;
+		// int productRewardId = mapNumbers.get("lastProductRewardId") + 1;
+		// int urlAliasId = mapNumbers.get("lastUrlAliasId") + 1;
 
 		// for (CatalogInstrument catalog : catalogInstrumentList) {
 		// for (Instrument instrument : instrumentList) {
@@ -343,132 +99,132 @@ public class ParserFile implements Parser {
 
 		String bufferLine = "";
 
-		for (String line : allOriginalLines) {
-
-			if (line.contains("INSERT INTO `oc_product`")) {
-				bufferLine = line;
-			} else if (bufferLine.contains("INSERT INTO `oc_product`")) {
-				for (String newLine : resultQueryOcProduct) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			if (line.contains("INSERT INTO `oc_product_description`")) {
-				bufferLine = line;
-
-			} else if (bufferLine.contains("INSERT INTO `oc_product_description`")) {
-				for (String newLine : resultQueryOcProductDescription) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			if (line.contains("INSERT INTO `oc_product_image`")) {
-				bufferLine = line;
-
-			} else if (bufferLine.contains("INSERT INTO `oc_product_image`")) {
-				for (String newLine : resultQueryOcProductImage) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			if (line.contains("INSERT INTO `oc_product_reward`")) {
-				bufferLine = line;
-
-			} else if (bufferLine.contains("INSERT INTO `oc_product_reward`")) {
-				for (String newLine : resultQueryOcProductReward) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			if (line.contains("INSERT INTO `oc_product_to_category`")) {
-				bufferLine = line;
-
-			} else if (bufferLine.contains("INSERT INTO `oc_product_to_category`")) {
-				for (String newLine : resultQueryOcProductToCategory) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			if (line.contains("INSERT INTO `oc_product_to_store`")) {
-				bufferLine = line;
-
-			} else if (bufferLine.contains("INSERT INTO `oc_product_to_store`")) {
-				for (String newLine : resultQueryOcProductToStore) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			if (line.contains("INSERT INTO `oc_url_alias`")) {
-				bufferLine = line;
-
-			} else if (bufferLine.contains("INSERT INTO `oc_url_alias`")) {
-				for (String newLine : resultQueryOcUrlAlias) {
-					modifyLines.add(newLine);
-				}
-				bufferLine = "";
-			}
-
-			modifyLines.add(line);
-		}
+		// for (String line : allOriginalLines) {
+		//
+		// if (line.contains("INSERT INTO `oc_product`")) {
+		// bufferLine = line;
+		// } else if (bufferLine.contains("INSERT INTO `oc_product`")) {
+		// for (String newLine : resultQueryOcProduct) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// if (line.contains("INSERT INTO `oc_product_description`")) {
+		// bufferLine = line;
+		//
+		// } else if (bufferLine.contains("INSERT INTO `oc_product_description`")) {
+		// for (String newLine : resultQueryOcProductDescription) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// if (line.contains("INSERT INTO `oc_product_image`")) {
+		// bufferLine = line;
+		//
+		// } else if (bufferLine.contains("INSERT INTO `oc_product_image`")) {
+		// for (String newLine : resultQueryOcProductImage) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// if (line.contains("INSERT INTO `oc_product_reward`")) {
+		// bufferLine = line;
+		//
+		// } else if (bufferLine.contains("INSERT INTO `oc_product_reward`")) {
+		// for (String newLine : resultQueryOcProductReward) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// if (line.contains("INSERT INTO `oc_product_to_category`")) {
+		// bufferLine = line;
+		//
+		// } else if (bufferLine.contains("INSERT INTO `oc_product_to_category`")) {
+		// for (String newLine : resultQueryOcProductToCategory) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// if (line.contains("INSERT INTO `oc_product_to_store`")) {
+		// bufferLine = line;
+		//
+		// } else if (bufferLine.contains("INSERT INTO `oc_product_to_store`")) {
+		// for (String newLine : resultQueryOcProductToStore) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// if (line.contains("INSERT INTO `oc_url_alias`")) {
+		// bufferLine = line;
+		//
+		// } else if (bufferLine.contains("INSERT INTO `oc_url_alias`")) {
+		// for (String newLine : resultQueryOcUrlAlias) {
+		// modifyLines.add(newLine);
+		// }
+		// bufferLine = "";
+		// }
+		//
+		// modifyLines.add(line);
+		// }
 
 	}
 
-	private Map<String, Integer> getNumbers() {
-		Map<String, Integer> result = new HashMap<>();
-
-		List<Integer> productId = new ArrayList<>();
-		List<Integer> imageId = new ArrayList<>();
-		List<Integer> productRewardId = new ArrayList<>();
-		List<Integer> urlAliasId = new ArrayList<>();
-
-		for (String line : allOriginalLines) {
-
-			if (line.contains(") VALUES (")) {
-
-				if (line.contains("INSERT INTO `oc_product_to_category`")) {
-
-					productId.add(getMemberDividedLine(line, 0));
-
-				}
-
-				if (line.contains("INSERT INTO `oc_product_image`")) {
-
-					imageId.add(getMemberDividedLine(line, 0));
-
-				}
-
-				if (line.contains("INSERT INTO `oc_product_reward`")) {
-
-					productRewardId.add(getMemberDividedLine(line, 0));
-
-				}
-
-				if (line.contains("INSERT INTO `oc_url_alias`")) {
-
-					urlAliasId.add(getMemberDividedLine(line, 0));
-
-				}
-			}
-		}
-
-		Collections.sort(productId, Collections.reverseOrder());
-		Collections.sort(imageId, Collections.reverseOrder());
-		Collections.sort(productRewardId, Collections.reverseOrder());
-		Collections.sort(urlAliasId, Collections.reverseOrder());
-
-		result.put("lastProductId", productId.get(0));
-		result.put("lastImageId", imageId.get(0));
-		result.put("lastProductRewardId", productRewardId.get(0));
-		result.put("lastUrlAliasId", urlAliasId.get(0));
-
-		return result;
-	}
+	// private Map<String, Integer> getNumbers() {
+	// Map<String, Integer> result = new HashMap<>();
+	//
+	// List<Integer> productId = new ArrayList<>();
+	// List<Integer> imageId = new ArrayList<>();
+	// List<Integer> productRewardId = new ArrayList<>();
+	// List<Integer> urlAliasId = new ArrayList<>();
+	//
+	// for (String line : allOriginalLines) {
+	//
+	// if (line.contains(") VALUES (")) {
+	//
+	// if (line.contains("INSERT INTO `oc_product_to_category`")) {
+	//
+	// productId.add(getMemberDividedLine(line, 0));
+	//
+	// }
+	//
+	// if (line.contains("INSERT INTO `oc_product_image`")) {
+	//
+	// imageId.add(getMemberDividedLine(line, 0));
+	//
+	// }
+	//
+	// if (line.contains("INSERT INTO `oc_product_reward`")) {
+	//
+	// productRewardId.add(getMemberDividedLine(line, 0));
+	//
+	// }
+	//
+	// if (line.contains("INSERT INTO `oc_url_alias`")) {
+	//
+	// urlAliasId.add(getMemberDividedLine(line, 0));
+	//
+	// }
+	// }
+	// }
+	//
+	// Collections.sort(productId, Collections.reverseOrder());
+	// Collections.sort(imageId, Collections.reverseOrder());
+	// Collections.sort(productRewardId, Collections.reverseOrder());
+	// Collections.sort(urlAliasId, Collections.reverseOrder());
+	//
+	// result.put("lastProductId", productId.get(0));
+	// result.put("lastImageId", imageId.get(0));
+	// result.put("lastProductRewardId", productRewardId.get(0));
+	// result.put("lastUrlAliasId", urlAliasId.get(0));
+	//
+	// return result;
+	// }
 
 	private Integer getMemberDividedLine(String line, int numberMember) {
 		Integer result = 0;
