@@ -19,7 +19,7 @@ public class DoorImage implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String name;
-	private String tipe;
+	private String type;
 	private byte[] image;
 	@Column(name = "door_id")
 	private int doorId;
@@ -44,12 +44,12 @@ public class DoorImage implements Serializable {
 		this.name = name;
 	}
 
-	public String getTipe() {
-		return tipe;
+	public String getType() {
+		return type;
 	}
 
-	public void setTipe(String tipe) {
-		this.tipe = tipe;
+	public void setType(String tipe) {
+		this.type = tipe;
 	}
 
 	public byte[] getImage() {
@@ -76,7 +76,7 @@ public class DoorImage implements Serializable {
 		result = prime * result + id;
 		result = prime * result + Arrays.hashCode(image);
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((tipe == null) ? 0 : tipe.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -100,17 +100,17 @@ public class DoorImage implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (tipe == null) {
-			if (other.tipe != null)
+		if (type == null) {
+			if (other.type != null)
 				return false;
-		} else if (!tipe.equals(other.tipe))
+		} else if (!type.equals(other.type))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "DoorImage [id=" + id + ", name=" + name + ", tipe=" + tipe + ", image=" + Arrays.toString(image)
+		return "DoorImage [id=" + id + ", name=" + name + ", type=" + type + ", image=" + Arrays.toString(image)
 				+ ", doorId=" + doorId + "]";
 	}
 

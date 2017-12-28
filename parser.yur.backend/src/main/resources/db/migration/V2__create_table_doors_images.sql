@@ -1,7 +1,7 @@
 CREATE TABLE Doors_Images (
   id int AUTO_INCREMENT, 
   name VARCHAR(255) UNIQUE, 
-  tipe VARCHAR(255) ,
+  type VARCHAR(255) ,
   image LONGBLOB ,
   door_id int NOT NULL,
   

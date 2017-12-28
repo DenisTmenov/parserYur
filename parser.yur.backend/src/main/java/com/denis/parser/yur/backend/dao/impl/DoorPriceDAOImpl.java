@@ -12,16 +12,16 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.denis.parser.yur.backend.dao.DoorImageDAO;
-import com.denis.parser.yur.backend.dto.DoorImage;
+import com.denis.parser.yur.backend.dao.DoorPriceDAO;
+import com.denis.parser.yur.backend.dto.DoorPrice;
 
-@Repository("doorImageDAO")
+@Repository("doorPriceDAO")
 @Transactional
-public class DoorImageDAOImpl implements DoorImageDAO {
+public class DoorPriceDAOImpl implements DoorPriceDAO {
 
-	private final String EXCEPTION_PREFIX = "Problem in DoorImageDAOImpl in";
+	private final String EXCEPTION_PREFIX = "Problem in DoorPriceDAOImpl in";
 
-	private static final Logger logger = LoggerFactory.getLogger(DoorImageDAOImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(DoorPriceDAOImpl.class);
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -31,34 +31,33 @@ public class DoorImageDAOImpl implements DoorImageDAO {
 	}
 
 	@Override
-	public DoorImage getById(@NonNull int id) {
+	public DoorPrice getById(@NonNull int id) {
 		try {
-			logger.info("Return DoorImage - INFO");
-			return sessionFactory.getCurrentSession().get(DoorImage.class, Integer.valueOf(id));
+			logger.info("Return DoorPrice - INFO");
+			return sessionFactory.getCurrentSession().get(DoorPrice.class, Integer.valueOf(id));
 		} catch (Exception ex) {
 			logger.error(EXCEPTION_PREFIX + " getById method. Return null - ERROR");
 			return null;
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<DoorImage> getByDoorId(@NonNull int doorId) {
-		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM DoorImage WHERE doorId = :doorId");
+	public DoorPrice getByDoorId(@NonNull int doorId) {
+		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM DoorPrice WHERE doorId = :doorId");
 		query.setParameter("doorId", doorId);
-
-		List<DoorImage> resultList = (List<DoorImage>) query.getResultList();
+		@SuppressWarnings("unchecked")
+		List<DoorPrice> resultList = (List<DoorPrice>) query.getResultList();
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return DoorImage - INFO");
-			return resultList;
+			logger.info("Return DoorPrice - INFO");
+			return resultList.get(0);
 		} else {
-			logger.info("DoorImage didn't found. Return null - INFO");
+			logger.info("DoorPrice didn't found. Return null - INFO");
 			return null;
 		}
 	}
 
 	@Override
-	public boolean saveOrUpdate(DoorImage entity) {
+	public boolean saveOrUpdate(DoorPrice entity) {
 		try {
 			sessionFactory.getCurrentSession().saveOrUpdate(entity);
 		} catch (ConstraintViolationException e) {
@@ -68,7 +67,6 @@ public class DoorImageDAOImpl implements DoorImageDAO {
 		} catch (Exception e) {
 			logger.error(EXCEPTION_PREFIX + " saveOrUpdate method - ERROR");
 		}
-
 		logger.info("SaveOrUpdate done - INFO");
 		return true;
 	}

@@ -16,4 +16,7 @@ public interface DoorDAO {
 
 	Integer getId(Door entity);
 
+	List<Door> getByCollection(String collection);
+
+	Door getByBrandCollectionName(String brand, String collection, String name);
 }

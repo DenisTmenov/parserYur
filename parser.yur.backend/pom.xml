@@ -131,6 +131,12 @@
 			<version>${icu4j.version}</version>
 		</dependency>
 
+		<!-- Upload files -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${commons.fileupload.version}</version>
+		</dependency>
 
 	</dependencies>
 </project>

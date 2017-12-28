@@ -32,35 +32,37 @@ public class DoorDAOImpl implements DoorDAO {
 
 	@Override
 	public List<Door> loadAllInfo() {
+		logger.info("Return List<Door> - INFO");
 		return sessionFactory.getCurrentSession().createQuery("FROM Door", Door.class).getResultList();
 	}
 
 	@Override
 	public Door getById(@NonNull int id) {
 		try {
+			logger.info("Return Door - INFO");
 			return sessionFactory.getCurrentSession().get(Door.class, Integer.valueOf(id));
 		} catch (Exception ex) {
-			System.out.println(EXCEPTION_PREFIX + " getById method.");
+			logger.error(EXCEPTION_PREFIX + " getById method. Return null - ERROR");
 			return null;
 		}
 	}
 
 	@Override
-	public Door getByURL(String url) {
-		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE url = '" + url + "'");
-		if (query != null) {
-
-			List<?> resultList = query.getResultList();
-
+	public Door getByURL(@NonNull String url) {
+		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE url = :url");
+		query.setParameter("url", url);
+		List<?> resultList = query.getResultList();
+		if (resultList != null && !resultList.isEmpty()) {
+			logger.info("Return Door - INFO");
 			return (Door) resultList.get(0);
 		} else {
-
+			logger.info("Door didn't found. Return null - INFO");
 			return null;
 		}
 	}
 
 	@Override
-	public boolean saveOrUpdate(Door entity) {
+	public boolean saveOrUpdate(@NonNull Door entity) {
 
 		try {
 			sessionFactory.getCurrentSession().saveOrUpdate(entity);
@@ -69,30 +71,68 @@ public class DoorDAOImpl implements DoorDAO {
 			logger.info("Dublicate product - INFO");
 			return true;
 		} catch (Exception e) {
-			Class<? extends Exception> class1 = e.getClass();
-			System.out.println(class1.toString());
+			logger.error(EXCEPTION_PREFIX + " saveOrUpdate method - ERROR");
 		}
+
+		logger.info("SaveOrUpdate done - INFO");
 		return true;
 	}
 
 	@Override
-	public Integer getId(Door entity) {
+	public Integer getId(@NonNull Door entity) {
 
 		Query<?> query = sessionFactory.getCurrentSession().createQuery(
-				"from Door where name = :name and brand = :brand and collection = :collection and url = :url");
+				"from Door WHERE name = :name and brand = :brand and collection = :collection and url = :url");
 		query.setParameter("name", entity.getName());
 		query.setParameter("brand", entity.getBrand());
 		query.setParameter("collection", entity.getCollection());
 		query.setParameter("url", entity.getUrl());
 
+		@SuppressWarnings("unchecked")
 		List<Door> resultList = (List<Door>) query.getResultList();
 
-		if (!resultList.isEmpty()) {
-
+		if (resultList != null && !resultList.isEmpty()) {
+			logger.info("Return id - INFO");
 			return resultList.get(0).getId();
 		} else {
-
+			logger.info("Return 0 - INFO");
 			return 0;
+		}
+	}
+
+	@Override
+	public List<Door> getByCollection(@NonNull String collection) {
+		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE collection = :collection");
+
+		query.setParameter("collection", collection);
+
+		@SuppressWarnings("unchecked")
+		List<Door> resultList = (List<Door>) query.getResultList();
+		if (resultList != null && !resultList.isEmpty()) {
+			logger.info("Return List<Door> - INFO");
+			return resultList;
+		} else {
+			logger.info("Doors didn't found by collection. Return null - INFO");
+			return null;
+		}
+	}
+
+	@Override
+	public Door getByBrandCollectionName(@NonNull String brand, @NonNull String collection, @NonNull String name) {
+		Query<?> query = sessionFactory.getCurrentSession()
+				.createQuery("from Door WHERE name = :name and brand = :brand and collection = :collection");
+		query.setParameter("name", name);
+		query.setParameter("brand", brand);
+		query.setParameter("collection", collection);
+
+		@SuppressWarnings("unchecked")
+		List<Door> resultList = (List<Door>) query.getResultList();
+		if (resultList != null && !resultList.isEmpty()) {
+			logger.info("Return List<Door> - INFO");
+			return resultList.get(0);
+		} else {
+			logger.info("Doors didn't found by brand + collection + name. Return null - INFO");
+			return null;
 		}
 	}
 

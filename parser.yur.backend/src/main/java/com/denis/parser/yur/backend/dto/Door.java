@@ -30,6 +30,8 @@ public class Door implements Serializable {
 	private String url;
 	@Transient // ignore
 	private List<DoorImage> doorImages;
+	@Transient // ignore
+	private DoorPrice doorPrice;
 
 	public Door() {
 		super(); // this form used by Hibernate
@@ -131,6 +133,14 @@ public class Door implements Serializable {
 		this.doorImages = doorImages;
 	}
 
+	public DoorPrice getDoorPrice() {
+		return doorPrice;
+	}
+
+	public void setDoorPrice(DoorPrice doorPrice) {
+		this.doorPrice = doorPrice;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -141,6 +151,7 @@ public class Door implements Serializable {
 		result = prime * result + ((color == null) ? 0 : color.hashCode());
 		result = prime * result + ((construction == null) ? 0 : construction.hashCode());
 		result = prime * result + ((doorImages == null) ? 0 : doorImages.hashCode());
+		result = prime * result + ((doorPrice == null) ? 0 : doorPrice.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((material == null) ? 0 : material.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -189,6 +200,11 @@ public class Door implements Serializable {
 				return false;
 		} else if (!doorImages.equals(other.doorImages))
 			return false;
+		if (doorPrice == null) {
+			if (other.doorPrice != null)
+				return false;
+		} else if (!doorPrice.equals(other.doorPrice))
+			return false;
 		if (id != other.id)
 			return false;
 		if (material == null) {
@@ -223,7 +239,8 @@ public class Door implements Serializable {
 	public String toString() {
 		return "Door [id=" + id + ", name=" + name + ", brand=" + brand + ", collection=" + collection + ", material="
 				+ material + ", coating=" + coating + ", construction=" + construction + ", color=" + color + ", tipe="
-				+ tipe + ", size=" + size + ", url=" + url + ", doorImages=" + doorImages + "]";
+				+ tipe + ", size=" + size + ", url=" + url + ", doorImages=" + doorImages + ", doorPrice=" + doorPrice
+				+ "]";
 	}
 
 }
