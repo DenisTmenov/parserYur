@@ -32,31 +32,32 @@ public class DoorDAOImpl implements DoorDAO {
 
 	@Override
 	public List<Door> loadAllDoors() {
-		logger.info("Return List<Door> - INFO");
+		logger.info("Return List<Door> !");
 		return sessionFactory.getCurrentSession().createQuery("FROM Door", Door.class).getResultList();
 	}
 
 	@Override
 	public Door findDoorById(@NonNull int id) {
 		try {
-			logger.info("Return Door - INFO");
+			logger.info("Return Door by id=" + id);
 			return sessionFactory.getCurrentSession().get(Door.class, Integer.valueOf(id));
 		} catch (Exception ex) {
-			logger.error(EXCEPTION_PREFIX + " getById method. Return null - ERROR");
+			logger.error(EXCEPTION_PREFIX + " getById method. Return null!");
 			return null;
 		}
 	}
 
 	@Override
 	public Door findDoorByURL(@NonNull String url) {
-		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE url = :url");
+		@SuppressWarnings("unchecked")
+		Query<Door> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE url = :url");
 		query.setParameter("url", url);
-		List<?> resultList = query.getResultList();
+		List<Door> resultList = query.getResultList();
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return Door - INFO");
-			return (Door) resultList.get(0);
+			logger.info("Return Door " + resultList.get(0).getName());
+			return resultList.get(0);
 		} else {
-			logger.info("Door didn't found. Return null - INFO");
+			logger.info("Door didn't found by URL - " + url + ". Return null - INFO");
 			return null;
 		}
 	}
@@ -68,13 +69,13 @@ public class DoorDAOImpl implements DoorDAO {
 			sessionFactory.getCurrentSession().saveOrUpdate(entity);
 		} catch (ConstraintViolationException e) {
 			sessionFactory.getCurrentSession().clear();
-			logger.info("Dublicate product - INFO");
+			logger.info("Dublicate Door " + entity.getName());
 			return true;
 		} catch (Exception e) {
 			logger.error(EXCEPTION_PREFIX + " saveOrUpdate method - ERROR");
 		}
 
-		logger.info("SaveOrUpdate done - INFO");
+		logger.info("Door " + entity.getName() + ". Saved or Updated.");
 		return true;
 	}
 
@@ -92,10 +93,10 @@ public class DoorDAOImpl implements DoorDAO {
 		List<Door> resultList = (List<Door>) query.getResultList();
 
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return id - INFO");
+			logger.info("Return id by Door " + entity.getName());
 			return resultList.get(0).getId();
 		} else {
-			logger.info("Return 0 - INFO");
+			logger.info("Door " + entity.getName() + " didn't found. Return 0!");
 			return 0;
 		}
 	}
@@ -109,10 +110,10 @@ public class DoorDAOImpl implements DoorDAO {
 		@SuppressWarnings("unchecked")
 		List<Door> resultList = (List<Door>) query.getResultList();
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return List<Door> - INFO");
+			logger.info("Return List<Door> by collection " + collection);
 			return resultList;
 		} else {
-			logger.info("Doors didn't found by collection. Return null - INFO");
+			logger.info("Doors didn't found by collection " + collection + ". Return null !");
 			return null;
 		}
 	}
@@ -120,7 +121,7 @@ public class DoorDAOImpl implements DoorDAO {
 	@Override
 	public Door findDoorByBrandCollectionName(@NonNull String brand, @NonNull String collection, @NonNull String name) {
 		Query<?> query = sessionFactory.getCurrentSession()
-				.createQuery("from Door WHERE name = :name and brand = :brand and collection = :collection");
+				.createQuery("FROM Door WHERE name = :name and brand = :brand and collection = :collection");
 		query.setParameter("name", name);
 		query.setParameter("brand", brand);
 		query.setParameter("collection", collection);
@@ -128,12 +129,24 @@ public class DoorDAOImpl implements DoorDAO {
 		@SuppressWarnings("unchecked")
 		List<Door> resultList = (List<Door>) query.getResultList();
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return List<Door> - INFO");
+			StringBuffer sb = new StringBuffer();
+			sb.append("Return List<Door> by Brand ").append(brand);
+			sb.append(", Collection").append(collection);
+			sb.append(", Name ").append(name);
+			logger.info(sb.toString());
 			return resultList.get(0);
 		} else {
-			logger.info("Doors didn't found by brand + collection + name. Return null - INFO");
+			logger.info("Doors didn't found by brand + collection + name. Return null !");
 			return null;
 		}
+	}
+
+	@Override
+	public List<String> getAllURLs() {
+		@SuppressWarnings("unchecked")
+		Query<String> query = sessionFactory.getCurrentSession().createQuery("SELECT url FROM Door");
+		logger.info("Return all URLs!");
+		return query.getResultList();
 	}
 
 }

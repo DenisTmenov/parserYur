@@ -19,4 +19,7 @@ public interface DoorDAO {
 	List<Door> findDoorsByCollection(String collection);
 
 	Door findDoorByBrandCollectionName(String brand, String collection, String name);
+
+	List<String> getAllURLs();
+
 }

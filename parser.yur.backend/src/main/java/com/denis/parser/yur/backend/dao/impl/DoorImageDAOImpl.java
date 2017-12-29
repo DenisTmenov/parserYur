@@ -33,7 +33,7 @@ public class DoorImageDAOImpl implements DoorImageDAO {
 	@Override
 	public DoorImage getById(@NonNull int id) {
 		try {
-			logger.info("Return DoorImage - INFO");
+			logger.info("Return DoorImage by id=" + id);
 			return sessionFactory.getCurrentSession().get(DoorImage.class, Integer.valueOf(id));
 		} catch (Exception ex) {
 			logger.error(EXCEPTION_PREFIX + " getById method. Return null - ERROR");
@@ -49,10 +49,10 @@ public class DoorImageDAOImpl implements DoorImageDAO {
 
 		List<DoorImage> resultList = (List<DoorImage>) query.getResultList();
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return DoorImage - INFO");
+			logger.info("Return DoorImage by doorId=" + doorId);
 			return resultList;
 		} else {
-			logger.info("DoorImage didn't found. Return null - INFO");
+			logger.info("DoorImage didn't found. Return null !");
 			return null;
 		}
 	}
@@ -63,13 +63,13 @@ public class DoorImageDAOImpl implements DoorImageDAO {
 			sessionFactory.getCurrentSession().saveOrUpdate(entity);
 		} catch (ConstraintViolationException e) {
 			sessionFactory.getCurrentSession().clear();
-			logger.info("Dublicate productImage - INFO");
+			logger.info("Dublicate productImage " + entity.getName());
 			return true;
 		} catch (Exception e) {
 			logger.error(EXCEPTION_PREFIX + " saveOrUpdate method - ERROR");
 		}
 
-		logger.info("SaveOrUpdate done - INFO");
+		logger.info("DoorImage " + entity.getName() + ". Saved or Updated.");
 		return true;
 	}
 

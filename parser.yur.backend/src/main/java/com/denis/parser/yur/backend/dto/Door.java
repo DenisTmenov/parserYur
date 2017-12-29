@@ -25,7 +25,7 @@ public class Door implements Serializable {
 	private String coating;
 	private String construction;
 	private String color;
-	private String tipe;
+	private String type;
 	private String size;
 	private String url;
 	@Transient // ignore
@@ -101,12 +101,12 @@ public class Door implements Serializable {
 		this.color = color;
 	}
 
-	public String getTipe() {
-		return tipe;
+	public String getType() {
+		return type;
 	}
 
-	public void setTipe(String tipe) {
-		this.tipe = tipe;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getSize() {
@@ -156,7 +156,7 @@ public class Door implements Serializable {
 		result = prime * result + ((material == null) ? 0 : material.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((size == null) ? 0 : size.hashCode());
-		result = prime * result + ((tipe == null) ? 0 : tipe.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((url == null) ? 0 : url.hashCode());
 		return result;
 	}
@@ -222,10 +222,10 @@ public class Door implements Serializable {
 				return false;
 		} else if (!size.equals(other.size))
 			return false;
-		if (tipe == null) {
-			if (other.tipe != null)
+		if (type == null) {
+			if (other.type != null)
 				return false;
-		} else if (!tipe.equals(other.tipe))
+		} else if (!type.equals(other.type))
 			return false;
 		if (url == null) {
 			if (other.url != null)
@@ -238,8 +238,8 @@ public class Door implements Serializable {
 	@Override
 	public String toString() {
 		return "Door [id=" + id + ", name=" + name + ", brand=" + brand + ", collection=" + collection + ", material="
-				+ material + ", coating=" + coating + ", construction=" + construction + ", color=" + color + ", tipe="
-				+ tipe + ", size=" + size + ", url=" + url + ", doorImages=" + doorImages + ", doorPrice=" + doorPrice
+				+ material + ", coating=" + coating + ", construction=" + construction + ", color=" + color + ", type="
+				+ type + ", size=" + size + ", url=" + url + ", doorImages=" + doorImages + ", doorPrice=" + doorPrice
 				+ "]";
 	}
 

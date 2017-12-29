@@ -38,7 +38,6 @@ public class ParserController {
 		mv.addObject("userClickParser", true);
 
 		logger.info("Inside PageController index method - INFO");
-		logger.debug("Inside PageController index method - DEBUG");
 
 		return mv;
 	}
@@ -50,14 +49,12 @@ public class ParserController {
 
 			if (ie.getKey().equals("htmlParserStart") && !ie.getKey().isEmpty()) {
 				logger.info("Inside PageController index method - INFO");
-				logger.debug("Inside PageController index method - DEBUG");
 
 				return "redirect:/parser/html";
 			}
 
 			if (ie.getKey().equals("fileParserStart") && !ie.getKey().isEmpty()) {
 				logger.info("Inside PageController index method - INFO");
-				logger.debug("Inside PageController index method - DEBUG");
 
 				return "redirect:/parser/file";
 			}
@@ -65,7 +62,6 @@ public class ParserController {
 		}
 
 		logger.info("Inside PageController index method - INFO");
-		logger.debug("Inside PageController index method - DEBUG");
 
 		return "redirect:/parser";
 	}
@@ -78,7 +74,6 @@ public class ParserController {
 		mv.addObject("userClickParserHtml", true);
 
 		logger.info("Inside PageController index method - INFO");
-		logger.debug("Inside PageController index method - DEBUG");
 
 		return mv;
 
@@ -105,7 +100,6 @@ public class ParserController {
 		mv.addObject("userClickParserFile", true);
 
 		logger.info("Inside PageController index method - INFO");
-		logger.debug("Inside PageController index method - DEBUG");
 
 		return mv;
 
@@ -130,179 +124,32 @@ public class ParserController {
 
 		Map<String, List<String>> parameters = new HashMap<>();
 
-		if (iterable_element.getKey().equals("html-yurkas-seriia-sevilja")
-				&& iterable_element.getValue().equals("html-yurkas-seriia-sevilja")) {
+		if (iterable_element.getKey().equals("html-test") && iterable_element.getValue().equals("html-test")) {
 
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/sevilja/",
-					iterable_element.getValue(), parameters);
-		}
-		if (iterable_element.getKey().equals("html-profildoors-seriia-portas")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-portas")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/porta/",
-					iterable_element.getValue(), parameters);
-
-		}
-		if (iterable_element.getKey().equals("html-profildoors-seriia-x-klassika")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-x-klassika")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/seriia-x-klassika/",
-					iterable_element.getValue(), parameters);
-
-		}
-		if (iterable_element.getKey().equals("html-profildoors-seriia-x-modern")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-x-modern")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/seriia-x-modern/",
-					iterable_element.getValue(), parameters);
-
-		}
-		if (iterable_element.getKey().equals("html-profildoors-seriia-u-modern")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-u-modern")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/seriia-u-modern/",
-					iterable_element.getValue(), parameters);
-
-		}
-		if (iterable_element.getKey().equals("html-profildoors-seriia-u-klassika")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-u-klassika")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/seriia-u-klassika/",
-					iterable_element.getValue(), parameters);
-
-		}
-
-		if (iterable_element.getKey().equals("html-profildoors-seriia-z")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-z")) {
 			runHtmlParsing(
 					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/seriia-z/",
 					iterable_element.getValue(), parameters);
 		}
 
-		if (iterable_element.getKey().equals("html-profildoors-seriia-e")
-				&& iterable_element.getValue().equals("html-profildoors-seriia-e")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/seriia-e/",
-					iterable_element.getValue(), parameters);
-		}
+		if (iterable_element.getKey().equals("html-yurkas-mezhkomnatnye-dveri")
+				&& iterable_element.getValue().equals("html-yurkas-mezhkomnatnye-dveri")) {
 
-		if (iterable_element.getKey().equals("html-yurkas-seriia-kasaporte")
-				&& iterable_element.getValue().equals("html-yurkas-seriia-kasaporte")) {
 			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/kasaporte/",
+					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/",
 					iterable_element.getValue(), parameters);
 		}
+		if (iterable_element.getKey().equals("html-yurkas-vhodnye-dveri")
+				&& iterable_element.getValue().equals("html-yurkas-vhodnye-dveri")) {
+			runHtmlParsing("http://yurkas.by/shop/vhodnye-dveri/", iterable_element.getValue(), parameters);
 
-		if (iterable_element.getKey().equals("html-yurkas-seriia-siti")
-				&& iterable_element.getValue().equals("html-yurkas-seriia-siti")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/siti/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-odincovo-seriia-turin")
-				&& iterable_element.getValue().equals("html-odincovo-seriia-turin")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/serija-turin/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-ladora-seriia-jego")
-				&& iterable_element.getValue().equals("html-ladora-seriia-jego")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D1%8D%D0%BA%D0%BE%D1%88%D0%BF%D0%BE%D0%BD/serija-jego/",
-					iterable_element.getValue(), parameters);
-
-		}
-
-		if (iterable_element.getKey().equals("html-high-gloss")
-				&& iterable_element.getValue().equals("html-high-gloss")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/high-gloss/",
-					iterable_element.getValue(), parameters);
-		}
-		if (iterable_element.getKey().equals("html-doors-massive")
-				&& iterable_element.getValue().equals("html-doors-massive")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D0%B8%D0%B7_%D0%BC%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D0%B0/",
-					iterable_element.getValue(), parameters);
-		}
-		if (iterable_element.getKey().equals("html-doors-shponirovanie")
-				&& iterable_element.getValue().equals("html-doors-shponirovanie")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/dveri-shponirovannye/",
-					iterable_element.getValue(), parameters);
-		}
-		if (iterable_element.getKey().equals("html-doors-emal-okrashenie")
-				&& iterable_element.getValue().equals("html-doors-emal-okrashenie")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/dveri-emal/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-doors-3d") && iterable_element.getValue().equals("html-doors-3d")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/3d-dveri/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-doors-mdf")
-				&& iterable_element.getValue().equals("html-doors-mdf")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/dveri-mdf/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-doors-pvh")
-				&& iterable_element.getValue().equals("html-doors-pvh")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/%D0%B4%D0%B2%D0%B5%D1%80%D0%B8_%D0%BF%D0%B2%D1%85/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-doors-garmoshka")
-				&& iterable_element.getValue().equals("html-doors-garmoshka")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/dveri-garmoshka/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-doors-steklianye")
-				&& iterable_element.getValue().equals("html-doors-steklianye")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/steklianye-dveri/",
-					iterable_element.getValue(), parameters);
-		}
-
-		if (iterable_element.getKey().equals("html-doors-skladnye")
-				&& iterable_element.getValue().equals("html-doors-skladnye")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/skladnye-dveri/",
-					iterable_element.getValue(), parameters);
-		}
-		if (iterable_element.getKey().equals("html-doors-nevidimki")
-				&& iterable_element.getValue().equals("html-doors-nevidimki")) {
-			runHtmlParsing(
-					"http://yurkas.by/shop/%D0%9C%D0%B5%D0%B6%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%BD%D1%8B%D0%B5_%D0%B4%D0%B2%D0%B5%D1%80%D0%B8/dveri-nevidimki/",
-					iterable_element.getValue(), parameters);
 		}
 
 		return parameters;
 	}
 
 	private void runHtmlParsing(String URL, String keyForParameters, Map<String, List<String>> parameters) {
-		parserHtml.setStart_URL(URL);
-		parserHtml.start();
-		setURLsToMapParameters(keyForParameters, parameters);
 
-	}
-
-	private void setURLsToMapParameters(String key, Map<String, List<String>> parameters) {
-		List<String> productURLs = parserHtml.getProductURLs();
-		if (!productURLs.isEmpty()) {
-			parameters.put(key, productURLs);
-		}
+		parserHtml.start(URL);
 
 	}
 

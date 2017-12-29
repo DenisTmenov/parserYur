@@ -33,10 +33,10 @@ public class DoorPriceDAOImpl implements DoorPriceDAO {
 	@Override
 	public DoorPrice getById(@NonNull int id) {
 		try {
-			logger.info("Return DoorPrice - INFO");
+			logger.info("Return DoorPrice by id=" + id);
 			return sessionFactory.getCurrentSession().get(DoorPrice.class, Integer.valueOf(id));
 		} catch (Exception ex) {
-			logger.error(EXCEPTION_PREFIX + " getById method. Return null - ERROR");
+			logger.error(EXCEPTION_PREFIX + " getById method. Return null !");
 			return null;
 		}
 	}
@@ -48,10 +48,10 @@ public class DoorPriceDAOImpl implements DoorPriceDAO {
 		@SuppressWarnings("unchecked")
 		List<DoorPrice> resultList = (List<DoorPrice>) query.getResultList();
 		if (resultList != null && !resultList.isEmpty()) {
-			logger.info("Return DoorPrice - INFO");
+			logger.info("Return DoorPrice by dorId" + doorId);
 			return resultList.get(0);
 		} else {
-			logger.info("DoorPrice didn't found. Return null - INFO");
+			logger.info("DoorPrice didn't found. Return null !");
 			return null;
 		}
 	}
@@ -62,12 +62,12 @@ public class DoorPriceDAOImpl implements DoorPriceDAO {
 			sessionFactory.getCurrentSession().saveOrUpdate(entity);
 		} catch (ConstraintViolationException e) {
 			sessionFactory.getCurrentSession().clear();
-			logger.info("Dublicate productImage - INFO");
+			logger.info("Dublicate DoorPrice " + entity.toString());
 			return true;
 		} catch (Exception e) {
 			logger.error(EXCEPTION_PREFIX + " saveOrUpdate method - ERROR");
 		}
-		logger.info("SaveOrUpdate done - INFO");
+		logger.info("DoorPrice " + entity.toString() + ". Saved or Updated.");
 		return true;
 	}
 

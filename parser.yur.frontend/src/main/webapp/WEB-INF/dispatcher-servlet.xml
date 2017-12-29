@@ -13,7 +13,7 @@
 
 	<context:component-scan base-package="com.denis.parser.yur.frontend" />
 	<context:component-scan base-package="com.denis.parser.yur.backend" />
-	<context:property-placeholder location="classpath*:DB.properties" />
+	<context:property-placeholder location="classpath*:settings/DB.properties" />
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
@@ -65,7 +65,7 @@
 	<!-- Flyway configuration -->
 	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
 		<property name="baselineOnMigrate" value="true" />
-		<property name="locations" value="filesystem:/db/migration/" />
+		<property name="locations" value="classpath:db/migration/" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 

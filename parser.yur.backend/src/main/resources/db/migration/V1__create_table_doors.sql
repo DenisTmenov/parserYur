@@ -7,7 +7,7 @@ CREATE TABLE Doors (
   coating VARCHAR(255) ,
   construction VARCHAR(255) ,
   color VARCHAR(255) ,
-  tipe VARCHAR(255) ,
+  type VARCHAR(255) ,
   size VARCHAR(255) ,
   url VARCHAR(255) UNIQUE,
   
