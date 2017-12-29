@@ -31,13 +31,13 @@ public class DoorDAOImpl implements DoorDAO {
 	}
 
 	@Override
-	public List<Door> loadAllInfo() {
+	public List<Door> loadAllDoors() {
 		logger.info("Return List<Door> - INFO");
 		return sessionFactory.getCurrentSession().createQuery("FROM Door", Door.class).getResultList();
 	}
 
 	@Override
-	public Door getById(@NonNull int id) {
+	public Door findDoorById(@NonNull int id) {
 		try {
 			logger.info("Return Door - INFO");
 			return sessionFactory.getCurrentSession().get(Door.class, Integer.valueOf(id));
@@ -48,7 +48,7 @@ public class DoorDAOImpl implements DoorDAO {
 	}
 
 	@Override
-	public Door getByURL(@NonNull String url) {
+	public Door findDoorByURL(@NonNull String url) {
 		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE url = :url");
 		query.setParameter("url", url);
 		List<?> resultList = query.getResultList();
@@ -62,7 +62,7 @@ public class DoorDAOImpl implements DoorDAO {
 	}
 
 	@Override
-	public boolean saveOrUpdate(@NonNull Door entity) {
+	public boolean saveOrUpdateDoor(@NonNull Door entity) {
 
 		try {
 			sessionFactory.getCurrentSession().saveOrUpdate(entity);
@@ -79,7 +79,7 @@ public class DoorDAOImpl implements DoorDAO {
 	}
 
 	@Override
-	public Integer getId(@NonNull Door entity) {
+	public Integer getDoorId(@NonNull Door entity) {
 
 		Query<?> query = sessionFactory.getCurrentSession().createQuery(
 				"from Door WHERE name = :name and brand = :brand and collection = :collection and url = :url");
@@ -101,7 +101,7 @@ public class DoorDAOImpl implements DoorDAO {
 	}
 
 	@Override
-	public List<Door> getByCollection(@NonNull String collection) {
+	public List<Door> findDoorsByCollection(@NonNull String collection) {
 		Query<?> query = sessionFactory.getCurrentSession().createQuery("FROM Door WHERE collection = :collection");
 
 		query.setParameter("collection", collection);
@@ -118,7 +118,7 @@ public class DoorDAOImpl implements DoorDAO {
 	}
 
 	@Override
-	public Door getByBrandCollectionName(@NonNull String brand, @NonNull String collection, @NonNull String name) {
+	public Door findDoorByBrandCollectionName(@NonNull String brand, @NonNull String collection, @NonNull String name) {
 		Query<?> query = sessionFactory.getCurrentSession()
 				.createQuery("from Door WHERE name = :name and brand = :brand and collection = :collection");
 		query.setParameter("name", name);

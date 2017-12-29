@@ -6,17 +6,17 @@ import com.denis.parser.yur.backend.dto.Door;
 
 public interface DoorDAO {
 
-	List<Door> loadAllInfo();
+	List<Door> loadAllDoors();
 
-	Door getById(int id);
+	Door findDoorById(int id);
 
-	Door getByURL(String url);
+	Door findDoorByURL(String url);
 
-	boolean saveOrUpdate(Door entity);
+	boolean saveOrUpdateDoor(Door entity);
 
-	Integer getId(Door entity);
+	Integer getDoorId(Door entity);
 
-	List<Door> getByCollection(String collection);
+	List<Door> findDoorsByCollection(String collection);
 
-	Door getByBrandCollectionName(String brand, String collection, String name);
+	Door findDoorByBrandCollectionName(String brand, String collection, String name);
 }

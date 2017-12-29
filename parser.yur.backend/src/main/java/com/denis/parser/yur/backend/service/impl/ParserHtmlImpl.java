@@ -61,11 +61,11 @@ public class ParserHtmlImpl implements ParserHtml {
 
 		for (Door door : list) {
 
-			doorDAO.saveOrUpdate(door);
+			doorDAO.saveOrUpdateDoor(door);
 
 			if (!door.getDoorImages().isEmpty()) {
 
-				int doorId = doorDAO.getId(door);
+				int doorId = doorDAO.getDoorId(door);
 				if (doorId != 0) {
 
 					for (DoorImage doorImage : door.getDoorImages()) {

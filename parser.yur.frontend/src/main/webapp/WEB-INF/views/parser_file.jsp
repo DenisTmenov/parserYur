@@ -316,8 +316,8 @@
 							<tr>
 								<td><div class="form-check">
 										<label class="form-check-label"> <input
-											class="form-check-input" type="checkbox"
-											name="file-test" value="test">
+											class="form-check-input" type="checkbox" name="file-test"
+											value="test">
 										</label>
 									</div></td>
 								<td>TEST</td>
@@ -335,6 +335,20 @@
 
 				</form>
 			</div>
+
+			<div>
+				<form action="UploadDownloadFileServlet" method="post"
+					enctype="multipart/form-data">
+					Select File to Upload:<input type="file" name="fileName"> <br>
+					<input type="submit" value="Upload">
+				</form>
+
+
+
+
+			</div>
+
+
 
 			<!-- /.row -->
 

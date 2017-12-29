@@ -12,7 +12,7 @@
 	<packaging>war</packaging>
 	<name>parser.yur.frontend Maven Webapp</name>
 	<dependencies>
-	
+
 		<!-- Link to backend -->
 		<dependency>
 			<groupId>com.denis</groupId>
@@ -74,6 +74,15 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${jcl.over.slf4j.version}</version>
 		</dependency>
+
+		<!-- Upload file -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${commons.fileupload.version}</version>
+		</dependency>
+	
+
 
 	</dependencies>
 	<build>

@@ -73,8 +73,6 @@ public class ParserFileImpl implements ParserFile {
 			}
 		}
 
-		System.out.println();
-
 		for (Entry<String, Map> entry : allProductsFromeTxtFiles.entrySet()) {
 
 			Map<String, String> productInfo = entry.getValue();
@@ -269,12 +267,12 @@ public class ParserFileImpl implements ParserFile {
 
 	private List<Door> getDoorCollectionFromDB(Map<String, String> productInfo) {
 		String collection = productInfo.get("collection");
-		List<Door> result = doorDAO.getByCollection(collection);
+		List<Door> result = doorDAO.findDoorsByCollection(collection);
 		if (result != null) {
 			for (Door door : result) {
 				String doorName = door.getName();
 				String doorBrand = door.getBrand();
-				Integer doorId = doorDAO.getByBrandCollectionName(doorBrand, collection, doorName).getId();
+				Integer doorId = doorDAO.findDoorByBrandCollectionName(doorBrand, collection, doorName).getId();
 				List<DoorImage> doorImages = doorImageDAO.getByDoorId(doorId);
 				DoorPrice doorPrice = doorPriceDAO.getByDoorId(doorId);
 				door.setDoorImages(doorImages);
