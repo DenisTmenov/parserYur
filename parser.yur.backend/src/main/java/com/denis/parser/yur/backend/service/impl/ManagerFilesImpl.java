@@ -46,9 +46,14 @@ public class ManagerFilesImpl implements ManagerFiles {
 
 		try {
 			if (!Files.exists(Paths.get(newFileName))) {
+				createDir(newFileName);
+
 				Files.write(Paths.get(newFileName), "".getBytes(), StandardOpenOption.CREATE_NEW);
 			} else {
-				Files.write(Paths.get(newFileName), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+				// Files.write(Paths.get(newFileName), "".getBytes(),
+
+				// StandardOpenOption.TRUNCATE_EXISTING);
+				return true;
 			}
 
 			for (String line : lines) {
@@ -65,16 +70,36 @@ public class ManagerFilesImpl implements ManagerFiles {
 	@Override
 	public boolean saveImageToFile(byte[] image, String pathToFileAndFileName) {
 
-		try {
-			Files.write(Paths.get(pathToFileAndFileName), image, StandardOpenOption.CREATE);
+		if (pathToFileAndFileName != null && !pathToFileAndFileName.equals("")) {
+			pathToFileAndFileName = pathToFileAndFileName.replaceAll("/", "\\\\");
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+			try {
+				if (!Files.exists(Paths.get(pathToFileAndFileName))) {
+					createDir(pathToFileAndFileName);
+					Files.write(Paths.get(pathToFileAndFileName), "".getBytes(), StandardOpenOption.CREATE_NEW);
+				} else {
+					return true;
+					// Files.write(Paths.get(pathToFileAndFileName), "".getBytes(),
+					// StandardOpenOption.TRUNCATE_EXISTING);
+				}
+				Files.write(Paths.get(pathToFileAndFileName), image, StandardOpenOption.CREATE);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
 		}
 
-		return true;
+		return false;
 
+	}
+
+	private void createDir(String path) throws IOException {
+		String[] mas = path.split("\\\\");
+		String dir = path.replace(mas[mas.length - 1], "");
+
+		Files.createDirectories(Paths.get(dir));
 	}
 
 }

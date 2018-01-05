@@ -1,5 +1,8 @@
 package com.denis.parser.yur.backend.service.impl;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,8 +14,9 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.comparator.Comparators;
 
+import com.denis.parser.yur.backend.dto.Door;
+import com.denis.parser.yur.backend.dto.DoorImage;
 import com.denis.parser.yur.backend.service.BackupInformation;
 import com.denis.parser.yur.backend.service.ManagerFiles;
 import com.denis.parser.yur.backend.utils.StringUtils;
@@ -50,7 +54,6 @@ public class BackupInformationImpl implements BackupInformation {
 		Map<Integer, Map<String, String>> ocUrlAliasMap = new HashMap<>();
 
 		// maps for fast searching
-		Map<String, Integer> categoryNameNum = new HashMap<>();
 		Map<String, Map<String, Integer>> productNameNum = new HashMap<>();
 		Map<String, Integer> last = new HashMap<>();
 
@@ -61,13 +64,11 @@ public class BackupInformationImpl implements BackupInformation {
 					ocProductToStoreMap, ocUrlAliasMap, last);
 		}
 
-		fillCategoryNameNum(categoryNameNum, ocCategoryMap, ocCategoryDescriptionMap);
 		fillProductNameNum(productNameNum, ocCategoryMap, ocCategoryDescriptionMap, ocProductMap, ocProductAttributeMap,
 				ocProductDescriptionMap, ocManufacturerMap, ocProductToCategoryMap);
 
 		result.put("ocCategoryMap", ocCategoryMap);
 		result.put("ocCategoryDescriptionMap", ocCategoryDescriptionMap);
-		result.put("categoryNameNum", categoryNameNum);
 		result.put("ocCategoryToStoreMap", ocCategoryToStoreMap);
 		result.put("ocManufacturerMap", ocManufacturerMap);
 		result.put("ocManufacturerToStoreMap", ocManufacturerToStoreMap);
@@ -136,7 +137,7 @@ public class BackupInformationImpl implements BackupInformation {
 			break;
 		case "INSERT INTO `oc_product_image`":
 			id = setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product_image`", ocProductImageMap,
-					"product_id");
+					"product_image_id");
 
 			idString = ocProductImageMap.get(id).get("product_image_id");
 			if (StringUtils.isNumeric(idString)) {
@@ -147,7 +148,7 @@ public class BackupInformationImpl implements BackupInformation {
 			break;
 		case "INSERT INTO `oc_product_reward`":
 			id = setInfoToMapIntegerMapStringString(originalLine, "INSERT INTO `oc_product_reward`", ocProductRewardMap,
-					"product_id");
+					"product_reward_id");
 
 			idString = ocProductRewardMap.get(id).get("product_reward_id");
 			if (StringUtils.isNumeric(idString)) {
@@ -235,44 +236,19 @@ public class BackupInformationImpl implements BackupInformation {
 
 			Integer productId = Integer.valueOf(entry.getValue().get("product_id"));
 
-			Integer categoryId = 0;
 			Integer manufacturerId = Integer.valueOf(entry.getValue().get("manufacturer_id"));
-			List<Integer> categories = ocProductToCategoryMap.get(productId);
-			if (categories.size() > 0) {
-				Collections.sort(categories, Comparators.comparable());
-
-				categoryId = categories.get(categories.size() - 1);
-			}
-
-			Map<Integer, Map<String, String>> categoryDescription = ocCategoryDescriptionMap.get(categoryId);
-
-			String collection = "";
-
-			if (categoryDescription != null) {
-				categoryDescription.get(1).get("name");
-				if (collection.isEmpty()) {
-					collection = ocCategoryDescriptionMap.get(categoryId).get(2).get("name");
-				}
-			}
 
 			String brand = ocManufacturerMap.get(manufacturerId).get("name");
 			String name = ocProductDescriptionMap.get(productId).get(1).get("name");
 			if (name.isEmpty()) {
 				name = ocProductDescriptionMap.get(productId).get(2).get("name");
 			}
-			String priceString = entry.getValue().get("price");
-			Double price = 0.0;
-			if (StringUtils.isNumeric(priceString)) {
-				price = Double.valueOf(priceString);
-			}
 
 			productInfo.put("productId", productId);
-			productInfo.put("categoryId", categoryId);
 			productInfo.put("manufacturerId", manufacturerId);
 
 			StringBuffer sb = new StringBuffer();
 			sb.append(brand).append(" -> ");
-			sb.append(collection).append(" -> ");
 			sb.append(name);
 
 			String nameElement = sb.toString();
@@ -283,6 +259,7 @@ public class BackupInformationImpl implements BackupInformation {
 		return false;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Map<String, Map> getAllProductsFromTxtFile(String pathToFile) {
 		Map<String, Map> result = new HashMap<>();
@@ -340,7 +317,6 @@ public class BackupInformationImpl implements BackupInformation {
 
 			StringBuffer sb = new StringBuffer();
 			sb.append(element.get("brand")).append(" -> ");
-			sb.append(element.get("collection")).append(" -> ");
 			sb.append(element.get("name"));
 
 			String nameElement = sb.toString();
@@ -576,6 +552,7 @@ public class BackupInformationImpl implements BackupInformation {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean updateInformation(Map<String, String> queries, Map<String, Map> allProductsFromeSQLFile) {
 
@@ -600,9 +577,11 @@ public class BackupInformationImpl implements BackupInformation {
 
 				updateInformation(queries, allProductsFromeSQLFile, "ocProductReward",
 						"INSERT INTO `oc_product_reward`", "ocProductRewardMap", "product_id", null)
-				&&
 
-				updateInformation(queries, allProductsFromeSQLFile, "ocUrlAlias", "INSERT INTO `oc_url_alias`",
+				&& updateInformationAttribute(queries, allProductsFromeSQLFile, "ocProductAttribute",
+						"INSERT INTO `oc_product_attribute`", "ocProductAttributeMap", "product_id")
+
+				&& updateInformation(queries, allProductsFromeSQLFile, "ocUrlAlias", "INSERT INTO `oc_url_alias`",
 						"ocUrlAliasMap", "url_alias_id", null)) {
 			return true;
 		}
@@ -611,7 +590,7 @@ public class BackupInformationImpl implements BackupInformation {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean updateInformationCategory(Map<String, String> queries, Map allProductsFromeSQLFile,
 			String nameQuery, String search, String nameSQL, String mainKey, String secondaryKey) {
 		String query = queries.get(nameQuery);
@@ -640,7 +619,7 @@ public class BackupInformationImpl implements BackupInformation {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean updateInformation(Map<String, String> queries, Map<String, Map> allProductsFromeSQLFile,
 			String nameQuery, String search, String nameSQL, String mainKey, String secondaryKey) {
 
@@ -695,19 +674,83 @@ public class BackupInformationImpl implements BackupInformation {
 		return false;
 	}
 
+	@SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+	public boolean updateInformationAttribute(Map<String, String> queries,
+			@SuppressWarnings("rawtypes") Map<String, Map> allProductsFromeSQLFile, String nameQuery, String search,
+			String nameSQL, String mainKey) {
+		String query = queries.get(nameQuery);
+		if (query != null) {
+			String[] queriesMas = query.split("\n");
+			Map<Integer, Map<Integer, Map<String, String>>> enter = new HashMap<>();
+			Map<Integer, Map<String, String>> attributeMap = enter.get("attribute_id");
+			Integer idNewProduct = 0;
+			for (String line : queriesMas) {
+				Map<String, String> infoFromLine = getInfoFromLine(line, search);
+
+				if (attributeMap == null) {
+					attributeMap = new HashMap<>();
+				}
+				if (idNewProduct == 0) {
+					idNewProduct = Integer.valueOf(infoFromLine.get("product_id"));
+				}
+
+				attributeMap.put(Integer.valueOf(infoFromLine.get("language_id")), infoFromLine);
+
+				enter.put(Integer.valueOf(infoFromLine.get("attribute_id")), attributeMap);
+			}
+			allProductsFromeSQLFile.get(nameSQL).put(idNewProduct, enter);
+			return true;
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
 	@Override
-	public boolean saveModifySQLFile(String pathToSQLFile, Map<String, Map> allProductsFromeSQLFile) {
+	public Path saveModifySQLFile(String pathToSQLFile, Map<String, Map> allProductsFromeSQLFile) {
 
 		managerFiles.setPath(pathToSQLFile);
 		List<String> originalLines = managerFiles.readFromeFile();
 
 		List<String> modifyLines = getModifyLines(originalLines, allProductsFromeSQLFile);
 
-		if (managerFiles.saveLinesToFile(modifyLines, null)) {
-			return true;
+		File file = new File(pathToSQLFile);
+		String path = file.getAbsolutePath();
+
+		String pathForTempFile = null;
+
+		String[] pathSplit = null;
+		String number = null;
+		if (path.contains("\\")) {
+
+			pathSplit = path.split("\\\\");
+			if (pathSplit != null && pathSplit[pathSplit.length - 1].contains("_")) {
+
+				String[] lastElementSplit = pathSplit[pathSplit.length - 1].split("_");
+				if (lastElementSplit != null && lastElementSplit[lastElementSplit.length - 1].contains(".")) {
+
+					String[] lastName = lastElementSplit[lastElementSplit.length - 1].split("\\.");
+
+					number = lastName[0];
+				}
+
+			}
 		}
 
-		return false;
+		if (pathSplit != null && pathSplit.length > 1 && number != null) {
+			path = path.replaceFirst(pathSplit[pathSplit.length - 2],
+					pathSplit[pathSplit.length - 2] + "\\\\" + number);
+			pathForTempFile = path.replaceFirst("_temp_" + number, "_modify");
+		}
+
+		if (managerFiles.saveLinesToFile(modifyLines, pathForTempFile)) {
+
+			String pathFolder = path.replace(pathSplit[pathSplit.length - 1], "");
+			Path result = Paths.get(pathFolder);
+			return result;
+		}
+
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -812,12 +855,17 @@ public class BackupInformationImpl implements BackupInformation {
 					oc_category_to_store = true;
 					Map<Integer, Integer> ocCategoryToStoreMap = allProductsFromeSQLFile.get("ocCategoryToStoreMap");
 
-					for (Entry<Integer, Integer> num : ocCategoryToStoreMap.entrySet()) {
+					List<Integer> numbers = new ArrayList<>();
+					for (Entry<Integer, Integer> entry : ocCategoryToStoreMap.entrySet()) {
+						numbers.add(entry.getKey());
+					}
+					Collections.sort(numbers);
+					for (Integer num : numbers) {
 
 						StringBuffer sb = new StringBuffer();
 						sb.append("INSERT INTO `oc_category_to_store` (`category_id`, `store_id`) VALUES ('");
-						sb.append(num.getKey()).append("', '");
-						sb.append(num.getValue()).append("');");
+						sb.append(num).append("', '");
+						sb.append(ocCategoryToStoreMap.get(num)).append("');");
 
 						result.add(sb.toString());
 						continue;
@@ -857,12 +905,17 @@ public class BackupInformationImpl implements BackupInformation {
 					Map<Integer, Integer> ocManufacturerToStoreMap = allProductsFromeSQLFile
 							.get("ocManufacturerToStoreMap");
 
-					for (Entry<Integer, Integer> num : ocManufacturerToStoreMap.entrySet()) {
+					List<Integer> numbers = new ArrayList<>();
+					for (Entry<Integer, Integer> entry : ocManufacturerToStoreMap.entrySet()) {
+						numbers.add(entry.getKey());
+					}
+					Collections.sort(numbers);
+					for (Integer num : numbers) {
 
 						StringBuffer sb = new StringBuffer();
-						sb.append("INSERT INTO `oc_category_to_store` (`manufacturer_id`, `store_id`) VALUES ('");
-						sb.append(num.getKey()).append("', '");
-						sb.append(num.getValue()).append("');");
+						sb.append("INSERT INTO `oc_manufacturer_to_store` (`manufacturer_id`, `store_id`) VALUES ('");
+						sb.append(num).append("', '");
+						sb.append(ocManufacturerToStoreMap.get(num)).append("');");
 
 						result.add(sb.toString());
 						continue;
@@ -930,14 +983,17 @@ public class BackupInformationImpl implements BackupInformation {
 					Map<Integer, Map<Integer, Map<Integer, Map<String, String>>>> ocProductAttributeMap = allProductsFromeSQLFile
 							.get("ocProductAttributeMap");
 
-					for (Entry<Integer, Map<Integer, Map<Integer, Map<String, String>>>> entry1 : ocProductAttributeMap
+					for (Entry<Integer, Map<Integer, Map<Integer, Map<String, String>>>> productIdEntry : ocProductAttributeMap
 							.entrySet()) {
-						Integer product_id = entry1.getKey();
-						for (Entry<Integer, Map<Integer, Map<String, String>>> entry2 : entry1.getValue().entrySet()) {
-							Integer attribute_id = entry2.getKey();
-							for (Entry<Integer, Map<String, String>> entry3 : entry2.getValue().entrySet()) {
-								Integer language_id = entry3.getKey();
-								String text = entry3.getValue().get("text");
+						Integer product_id = productIdEntry.getKey();
+
+						for (Entry<Integer, Map<Integer, Map<String, String>>> attributeIdEntry : productIdEntry
+								.getValue().entrySet()) {
+							Integer attribute_id = attributeIdEntry.getKey();
+							for (Entry<Integer, Map<String, String>> languageIdEntry : attributeIdEntry.getValue()
+									.entrySet()) {
+								Integer language_id = languageIdEntry.getKey();
+								String text = languageIdEntry.getValue().get("text");
 								StringBuffer sb1 = new StringBuffer();
 								sb1.append(
 										"INSERT INTO `oc_product_attribute` (`product_id`, `attribute_id`, `language_id`, `text`) VALUES ('");
@@ -971,7 +1027,7 @@ public class BackupInformationImpl implements BackupInformation {
 						StringBuffer sb = new StringBuffer();
 						sb.append(
 								"INSERT INTO `oc_product_image` (`product_image_id`, `product_id`, `image`, `sort_order`) VALUES ('");
-						sb.append(ocProductImageMap.get(num).get("product_image_id")).append("', '");
+						sb.append(num).append("', '");
 						sb.append(ocProductImageMap.get(num).get("product_id")).append("', '");
 						sb.append(ocProductImageMap.get(num).get("image")).append("', '");
 						sb.append(ocProductImageMap.get(num).get("sort_order")).append("');");
@@ -997,7 +1053,7 @@ public class BackupInformationImpl implements BackupInformation {
 						StringBuffer sb = new StringBuffer();
 						sb.append(
 								"INSERT INTO `oc_product_reward` (`product_reward_id`, `product_id`, `customer_group_id`, `points`) VALUES ('");
-						sb.append(ocProductRewardMap.get(num).get("product_image_id")).append("', '");
+						sb.append(ocProductRewardMap.get(num).get("product_reward_id")).append("', '");
 						sb.append(ocProductRewardMap.get(num).get("product_id")).append("', '");
 						sb.append(ocProductRewardMap.get(num).get("customer_group_id")).append("', '");
 						sb.append(ocProductRewardMap.get(num).get("points")).append("');");
@@ -1056,42 +1112,34 @@ public class BackupInformationImpl implements BackupInformation {
 					Map<Integer, Map<Integer, Map<String, String>>> ocProductDescriptionMap = allProductsFromeSQLFile
 							.get("ocProductDescriptionMap");
 					List<Integer> numbers = new ArrayList<>();
-					for (Entry<Integer, Map<Integer, Map<String, String>>> entry : ocProductDescriptionMap.entrySet()) {
-						numbers.add(entry.getKey());
+					for (Entry<Integer, Map<Integer, Map<String, String>>> productIdEntry : ocProductDescriptionMap
+							.entrySet()) {
+						numbers.add(productIdEntry.getKey());
 					}
 					Collections.sort(numbers);
+
 					for (Integer num : numbers) {
 
-						StringBuffer sb1 = new StringBuffer();
-						sb1.append(
-								"INSERT INTO `oc_product_description` (`product_id`, `language_id`, `name`, `description`, `meta_description`, `meta_keyword`, `tag`, `u_title`, `u_h1`, `u_h2`) VALUES ('");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("product_id")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("language_id")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("name")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("description")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("meta_description")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("meta_keyword")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("tag")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("u_title")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("u_h1")).append("', '");
-						sb1.append(ocProductDescriptionMap.get(num).get(1).get("u_h2")).append("');");
+						Map<Integer, Map<String, String>> languageIdEntry = ocProductDescriptionMap.get(num);
 
-						StringBuffer sb2 = new StringBuffer();
-						sb2.append(
-								"INSERT INTO `oc_product_description` (`product_id`, `language_id`, `name`, `description`, `meta_description`, `meta_keyword`, `tag`, `u_title`, `u_h1`, `u_h2`) VALUES ('");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("product_id")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("language_id")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("name")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("description")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("meta_description")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("meta_keyword")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("tag")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("u_title")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("u_h1")).append("', '");
-						sb2.append(ocProductDescriptionMap.get(num).get(2).get("u_h2")).append("');");
+						for (Entry<Integer, Map<String, String>> entry : languageIdEntry.entrySet()) {
+							StringBuffer sb1 = new StringBuffer();
+							sb1.append(
+									"INSERT INTO `oc_product_description` (`product_id`, `language_id`, `name`, `description`, `meta_description`, `meta_keyword`, `tag`, `u_title`, `u_h1`, `u_h2`) VALUES ('");
+							sb1.append(num).append("', '");
+							sb1.append(entry.getKey()).append("', '");
+							sb1.append(entry.getValue().get("name")).append("', '");
+							sb1.append(entry.getValue().get("description")).append("', '");
+							sb1.append(entry.getValue().get("meta_description")).append("', '");
+							sb1.append(entry.getValue().get("meta_keyword")).append("', '");
+							sb1.append(entry.getValue().get("tag")).append("', '");
+							sb1.append(entry.getValue().get("u_title")).append("', '");
+							sb1.append(entry.getValue().get("u_h1")).append("', '");
+							sb1.append(entry.getValue().get("u_h2")).append("');");
 
-						result.add(sb1.toString());
-						result.add(sb2.toString());
+							result.add(sb1.toString());
+						}
+
 					}
 					continue;
 				} else {
@@ -1127,6 +1175,70 @@ public class BackupInformationImpl implements BackupInformation {
 		}
 
 		return result;
+	}
+
+	@Override
+	public Map<String, String> getAllCategoriesFromeSQLFile(String pathToSqlFile) {
+		Map<String, String> result = new HashMap<>();
+
+		managerFiles.setPath(pathToSqlFile);
+		List<String> allLines = managerFiles.readFromeFile();
+
+		Map<Integer, Map<Integer, Map<String, String>>> ocCategoryDescriptionMap = new HashMap<>();
+
+		for (String line : allLines) {
+			if (line.contains("INSERT INTO `oc_category_description`")) {
+				setInfoToMapIntegerMapIntegerMapStringString(line, "INSERT INTO `oc_category_description`",
+						ocCategoryDescriptionMap, "category_id", "language_id");
+			}
+		}
+
+		for (Entry<Integer, Map<Integer, Map<String, String>>> entry1 : ocCategoryDescriptionMap.entrySet()) {
+			Integer categoryId = entry1.getKey();
+			String categoryName = "";
+
+			for (Entry<Integer, Map<String, String>> entry2 : entry1.getValue().entrySet()) {
+				if (categoryName.isEmpty()) {
+					categoryName = entry2.getValue().get("name");
+				} else {
+					break;
+				}
+			}
+
+			if (!categoryName.isEmpty()) {
+				result.put(categoryName, categoryId.toString());
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public boolean saveDoorsImagesToTempFolder(List<Door> newDoors, Map<String, Map> allProductsFromeSQLFile,
+			Path path) {
+		if (newDoors != null && newDoors.size() > 0) {
+
+			@SuppressWarnings("unchecked")
+			Map<Integer, List<String>> productImage = allProductsFromeSQLFile.get("productImage");
+			for (Door door : newDoors) {
+
+				Integer productId = door.getId();
+				List<String> imageList = productImage.get(productId);
+
+				for (DoorImage doorImage : door.getDoorImages()) {
+					byte[] image = doorImage.getImage();
+
+					if (image != null && image.length > 0) {
+						for (String imgText : imageList) {
+							managerFiles.saveImageToFile(image, path.toString() + "\\" + imgText);
+						}
+					}
+
+				}
+
+			}
+		}
+		return false;
 	}
 
 }

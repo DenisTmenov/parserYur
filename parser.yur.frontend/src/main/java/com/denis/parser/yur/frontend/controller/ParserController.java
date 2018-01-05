@@ -106,15 +106,42 @@ public class ParserController {
 	}
 
 	@RequestMapping(value = "/parser/file", method = RequestMethod.POST)
-	public String parseFilePost(@RequestParam Map<String, String> allRequestParams) {
+	public String parseFilePost(@RequestParam Map<String, String> allRequestParams, HttpServletRequest request) {
 
-		// for (Entry<String, String> iterable_element : allRequestParams.entrySet()) {
-		//
-		// checkParametersForParserFile(iterable_element);
-		// }
+		@SuppressWarnings("unchecked")
+		Map<String, Map<String, String>> uploadFilesAttribute = (Map<String, Map<String, String>>) request.getSession()
+				.getAttribute("uploadFiles");
+		@SuppressWarnings("unchecked")
+		Map<String, Map<String, String>> categoriesAttribute = (Map<String, Map<String, String>>) request.getSession()
+				.getAttribute("categories");
 
-		parserFile.setPathToOriginalFile("D:/TEST/2017-12-15_10-01-53_backup.sql");
-		parserFile.start();
+		if (uploadFilesAttribute == null) {
+			return "forward:/upload/file";
+		}
+
+		if (uploadFilesAttribute.containsKey("sql") && uploadFilesAttribute.containsKey("txt")) {
+
+			if (categoriesAttribute == null) {
+				return "forward:/categories";
+
+			}
+
+			@SuppressWarnings({ "unchecked" })
+			List<String> chooseCategories = (List<String>) request.getSession().getAttribute("chooseCategories");
+			if (chooseCategories != null) {
+				parserFile.setPathToSqlFile(uploadFilesAttribute.get("sql").get("path"));
+				parserFile.setPathToTxtFile(uploadFilesAttribute.get("txt").get("path"));
+				parserFile.setCategories(chooseCategories);
+				parserFile.start();
+
+				request.getSession().removeAttribute("uploadFiles");
+
+				request.getSession().removeAttribute("categories");
+
+				return "redirect:/home";
+			}
+
+		}
 
 		return "redirect:/parser/file";
 
@@ -153,162 +180,4 @@ public class ParserController {
 
 	}
 
-	private void checkParametersForParserFile(Entry<String, String> iterable_element) {
-		if (iterable_element.getKey().equals("file-yurkas-seriia-sevilja")
-				&& iterable_element.getValue().equals("file-yurkas-seriia-sevilja")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-
-		}
-		if (iterable_element.getKey().equals("file-profildoors-seriia-portas")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-portas")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-
-		}
-		if (iterable_element.getKey().equals("file-profildoors-seriia-x-klassika")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-x-klassika")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-
-		}
-		if (iterable_element.getKey().equals("file-profildoors-seriia-x-modern")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-x-modern")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-		if (iterable_element.getKey().equals("file-profildoors-seriia-u-modern")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-u-modern")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-
-		}
-		if (iterable_element.getKey().equals("file-profildoors-seriia-u-klassika")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-u-klassika")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-
-		}
-
-		if (iterable_element.getKey().equals("file-profildoors-seriia-z")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-z")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-profildoors-seriia-e")
-				&& iterable_element.getValue().equals("file-profildoors-seriia-e")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-yurkas-seriia-kasaporte")
-				&& iterable_element.getValue().equals("file-yurkas-seriia-kasaporte")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-yurkas-seriia-siti")
-				&& iterable_element.getValue().equals("file-yurkas-seriia-siti")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-odincovo-seriia-turin")
-				&& iterable_element.getValue().equals("file-odincovo-seriia-turin")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-ladora-seriia-jego")
-				&& iterable_element.getValue().equals("file-ladora-seriia-jego")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-
-		}
-
-		if (iterable_element.getKey().equals("file-high-gloss")
-				&& iterable_element.getValue().equals("file-high-gloss")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-		if (iterable_element.getKey().equals("file-doors-massive")
-				&& iterable_element.getValue().equals("file-doors-massive")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-		if (iterable_element.getKey().equals("file-doors-shponirovanie")
-				&& iterable_element.getValue().equals("file-doors-shponirovanie")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-		if (iterable_element.getKey().equals("file-doors-emal-okrashenie")
-				&& iterable_element.getValue().equals("file-doors-emal-okrashenie")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-doors-3d") && iterable_element.getValue().equals("file-doors-3d")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-doors-mdf")
-				&& iterable_element.getValue().equals("file-doors-mdf")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-doors-pvh")
-				&& iterable_element.getValue().equals("file-doors-pvh")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-doors-garmoshka")
-				&& iterable_element.getValue().equals("file-doors-garmoshka")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-doors-steklianye")
-				&& iterable_element.getValue().equals("file-doors-steklianye")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-
-		if (iterable_element.getKey().equals("file-doors-skladnye")
-				&& iterable_element.getValue().equals("file-doors-skladnye")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-		if (iterable_element.getKey().equals("file-doors-nevidimki")
-				&& iterable_element.getValue().equals("file-doors-nevidimki")) {
-			parserFile.setPathToOriginalFile("");
-
-			parserFile.start();
-		}
-	}
 }
