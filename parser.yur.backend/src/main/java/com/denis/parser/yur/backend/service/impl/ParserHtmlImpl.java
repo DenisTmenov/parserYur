@@ -79,7 +79,7 @@ public class ParserHtmlImpl implements ParserHtml {
 				}
 
 				Door door = getProductInfoFromPage(doc, productURL);
-				logger.info("Information about door received.");
+				logger.info("Information about door " + door.getName() + " received.");
 
 				saveDoorOnDB(door);
 			}
@@ -98,7 +98,10 @@ public class ParserHtmlImpl implements ParserHtml {
 				productURLs.add(url);
 			}
 			productURLs.addAll(URLsFromDAO);
+		} else {
+			productURLs.addAll(URLsFromSite);
 		}
+
 	}
 
 	private void saveDoorOnDB(Door door) {

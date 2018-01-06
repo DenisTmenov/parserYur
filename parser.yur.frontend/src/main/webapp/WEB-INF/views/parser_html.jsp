@@ -44,16 +44,7 @@
 									</div></td>
 								<td>Юркас Входные двери</td>
 							</tr>
-							<tr>
-								<td><div class="form-check">
-										<label class="form-check-label"> <input
-											class="form-check-input" type="checkbox"
-											name="html-test"
-											value="html-test">
-										</label>
-									</div></td>
-								<td>TEST</td>
-							</tr>
+							
 							<tr>
 								<td colspan="2"><input
 									class="btn btn-primary btn-lg btn-block" type="submit"

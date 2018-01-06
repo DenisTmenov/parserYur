@@ -341,7 +341,7 @@ public class ParserFileImpl implements ParserFile {
 
 		Integer doorId = door.getId();
 		String name = door.getName();
-		String description = "&lt;p&gt;&lt;strong&gt;Цена включает в себя&lt;/strong&gt;: дверное полотно, коробка с уплотнителем без порога, наличник с двух сторон.&lt;br /&gt;\\r\\n&lt;strong&gt;Дополнительная комплектация: &lt;/strong&gt;фурнитура, доборы.&lt;/p&gt;\\r\\n";
+		String description = "&lt;p&gt;&lt;strong&gt;Цена включает в себя&lt;/strong&gt;: дверное полотно, коробка без порога, наличник с двух сторон.&lt;br /&gt;\\r\\n&lt;strong&gt;Дополнительная комплектация: &lt;/strong&gt;фурнитура, доборы.&lt;/p&gt;\\r\\n";
 
 		Map<Integer, Map<String, String>> map1 = new HashMap<>();
 		Map<String, String> map2 = new HashMap<>();
